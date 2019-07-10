@@ -1,0 +1,14 @@
+{
+  "endpoints": {
+    "startDistributeEvent": "http://localhost:8081/",
+    "completeDistributeEvent": "http://localhost:8083/",
+    "event": "http://localhost:8084/",
+    "startEvent": "http://localhost:8085/",
+    "startEventInterval": "http://localhost:8086/",
+    "cancelEvent": "http://localhost:8087/",
+    "deleteEvent": "http://localhost:8088/",
+    "endEvent": "http://localhost:8089/",
+    "status": "http://localhost:8090/"
+  },
+  "deadLetterPollInSeconds": 30
+}
