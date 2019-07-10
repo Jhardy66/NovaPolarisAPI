@@ -16,10 +16,12 @@ namespace novaAPIRev1
     {
         //JSON file transformed into a string
         const string OK_RESPONSE = "{\r\n\r\n  \"status\": {\r\n\r\n    \"code\": 200,\r\n\r\n    \"message\": \"OK\"\r\n  }\r\n\r\n}\r\n";
-
-        public NovaEndpointListener()
+        public string port;
+        public string notificationType;
+        public NovaEndpointListener(string _port,string _notType)
         {
-
+            port = _port;
+            notificationType = _notType;
         }
 
 
@@ -30,7 +32,9 @@ namespace novaAPIRev1
 
             using (statusListener = new HttpListener())
             {
-                statusListener.Prefixes.Add("http://localhost:8081/");
+                string url = "http://localhost:" + port + "/";
+
+                statusListener.Prefixes.Add(url);
 
                 statusListener.Start();
 
@@ -48,9 +52,11 @@ namespace novaAPIRev1
                         Stream recStream = request.InputStream;
                         requestStr = new StreamReader(recStream, Encoding.UTF8).ReadToEnd();
 
-                        string printNotification = "[Received Notification:]" + requestStr;
-                        Console.WriteLine(printNotification);
-
+                        DateTime dt = DateTime.UtcNow;
+                        string now = "[" + dt.ToString("yyyy-MM-dd HH:mm:ss.fff") + "]";
+                            string printNotification = now + "[Received " + notificationType + " Notification]: " + requestStr;
+                            Console.WriteLine(printNotification);
+                        
                         //Send standard HTTP response to NOVA on same port
                         using (HttpListenerResponse response = context.Response)
                         {

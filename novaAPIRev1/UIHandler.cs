@@ -22,14 +22,7 @@ namespace novaAPIRev1
             string result;
 
             //Spin a new thread for the notification listener
-            NovaEndpointListener novaEndpointListener = null;
-            Thread th_novaListener = null;
-
-            novaEndpointListener = new NovaEndpointListener();
-
-            th_novaListener = new Thread(novaEndpointListener.run);
-
-            th_novaListener.Start();
+            StartListenerThreads();
             SetupConsole();
 
             while (true)
@@ -132,12 +125,66 @@ namespace novaAPIRev1
                     Console.WriteLine("Press Any Button to Continue...");
                     Console.ReadKey();
                 }
+                help = false;
             }
            
         }
 
         //All these Methods create objects based on user input, or send parameter-less 
         //Commands if that is what is needed.
+        static void StartListenerThreads()
+        {
+            NovaEndpointListener startDistributeEvent = null;
+            NovaEndpointListener completeDistributeEvent = null;
+            NovaEndpointListener eventListener = null;
+            NovaEndpointListener startEvent = null;
+            NovaEndpointListener startEventInterval = null;
+            NovaEndpointListener cancelEvent = null;
+            NovaEndpointListener deleteEvent = null;
+            NovaEndpointListener endEvent = null;
+            NovaEndpointListener status = null;
+
+            Thread th_startDistribEvent = null;
+            Thread th_completeDistEvent = null;
+            Thread th_eventListener = null;
+            Thread th_startEvent = null;
+            Thread th_startEventInterval = null;
+            Thread th_cancelEvent = null;
+            Thread th_deleteEvent = null;
+            Thread th_endEvent = null;
+            Thread th_status = null;
+
+            startDistributeEvent = new NovaEndpointListener("8081","startDistributeEvent");
+            completeDistributeEvent = new NovaEndpointListener("8083","completeDistributeEvent");
+            eventListener = new NovaEndpointListener("8084","event");
+            startEvent = new NovaEndpointListener("8085","startEvent");
+            startEventInterval = new NovaEndpointListener("8086","startEventInterval");
+            cancelEvent = new NovaEndpointListener("8087","cancelEvent");
+            deleteEvent = new NovaEndpointListener("8088","deleteEvent");
+            endEvent = new NovaEndpointListener("8089","endEvent");
+            status = new NovaEndpointListener("8090","status");
+
+            th_startDistribEvent = new Thread(startDistributeEvent.run);
+            th_completeDistEvent = new Thread(completeDistributeEvent.run);
+            th_eventListener = new Thread(eventListener.run);
+            th_startEvent = new Thread(startEvent.run);
+            th_startEventInterval = new Thread(startEventInterval.run);
+            th_cancelEvent = new Thread(cancelEvent.run);
+            th_deleteEvent = new Thread(deleteEvent.run);
+            th_endEvent = new Thread(endEvent.run);
+            th_status = new Thread(status.run);
+
+            th_startDistribEvent.Start();
+            th_completeDistEvent.Start();
+            th_eventListener.Start();
+            th_startEvent.Start();
+            th_startEventInterval.Start();
+            th_cancelEvent.Start();
+            th_deleteEvent.Start();
+            th_endEvent.Start();
+            th_status.Start();
+
+        }
         static string QueryRegistration()
         {
             //creates a new JSON request with no parameters, see readme for list of commands
