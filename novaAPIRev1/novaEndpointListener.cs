@@ -52,10 +52,9 @@ namespace novaAPIRev1
                         Stream recStream = request.InputStream;
                         requestStr = new StreamReader(recStream, Encoding.UTF8).ReadToEnd();
 
-                        DateTime dt = DateTime.UtcNow;
-                        string now = "[" + dt.ToString("yyyy-MM-dd HH:mm:ss.fff") + "]";
-                            string printNotification = now + "[Received " + notificationType + " Notification]: " + requestStr;
-                            Console.WriteLine(printNotification);
+                       
+                            string printNotification = "[Received " + notificationType + " Notification]: " + requestStr;
+                            Logging.Log(printNotification);
                         
                         //Send standard HTTP response to NOVA on same port
                         using (HttpListenerResponse response = context.Response)
@@ -73,7 +72,7 @@ namespace novaAPIRev1
                         }
                     }catch(Exception ex)
                     {
-                        Console.WriteLine(ex.ToString());
+                        Logging.Log(ex.ToString());
                     }
                  
             }

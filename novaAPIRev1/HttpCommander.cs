@@ -45,15 +45,16 @@ namespace novaAPIRev1
                 using (StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream()))
                 {
                     result = streamReader.ReadToEnd();
-
+                    Logging.LogResponse(result);
 
                 }
 
                 
                 return JsonConvert.DeserializeObject(result).ToString();
             }
-            catch (Exception ex)
+            catch (WebException ex)
             {
+                Logging.Log("NOVA Not Running!");
                 return ex.ToString();
             }
         }

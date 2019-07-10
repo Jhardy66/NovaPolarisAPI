@@ -21,6 +21,9 @@ namespace novaAPIRev1
             bool help = false;
             string result;
 
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
+            Logging.Initialize();
+
             //Spin a new thread for the notification listener
             StartListenerThreads();
             SetupConsole();
@@ -28,9 +31,9 @@ namespace novaAPIRev1
             while (true)
             {
                 //Simple menu system
-                Console.WriteLine("===== Polaris NOVA API (type 'h' for command list) =====");
+                Logging.Log("===== Polaris NOVA API (type 'h' for command list) =====",false,true);
                 string userInput = Console.ReadLine();
-
+                Logging.Log(userInput, false, true);
                 switch (userInput.ToLower())
                 {
                     case "qr":
@@ -112,17 +115,17 @@ namespace novaAPIRev1
                 {
                     if (!help)
                     {
-                        Logging.LogResponse(result);
+                        //Logging.LogResponse(result);
                     }
                 }
                 else
                 {
-                    Console.WriteLine(badInputString);
+                    Logging.Log(badInputString,false,true);
                     inputValid = true;
                 }
                 if (!help)
                 {
-                    Console.WriteLine("Press Any Button to Continue...");
+                    Logging.Log("Press Any Button to Continue...",false,true);
                     Console.ReadKey();
                 }
                 help = false;
@@ -214,7 +217,7 @@ namespace novaAPIRev1
             bool validEntry = false;
             while (!validEntry)
             {
-                Console.WriteLine("Include IDs:(Y/N)");
+                Logging.Log("Include IDs:(Y/N)");
                 string includeID = Console.ReadLine();
 
 
@@ -229,7 +232,7 @@ namespace novaAPIRev1
                         validEntry = true;
                         break;
                     default:
-                        Console.WriteLine("Could Not Understand.... Retry");
+                        Logging.Log("Could Not Understand.... Retry");
                         break;
                 }
                 
@@ -292,7 +295,7 @@ namespace novaAPIRev1
         static string SetVenID()
         {
             //Takes User input and makes a setVenID object, converts to JSON, and sends it to NOVA
-            Console.WriteLine("Enter Ven ID:");
+            Logging.Log("Enter Ven ID:");
             
             string venid = Console.ReadLine();
 
@@ -308,17 +311,17 @@ namespace novaAPIRev1
 
         static string CreateOptSchedule()
         {
-            Console.WriteLine("Enter optId:");
+            Logging.Log("Enter optId:");
             string optId = Console.ReadLine();
-            Console.WriteLine("Enter opt type (optOut/optIn)");
+            Logging.Log("Enter opt type (optOut/optIn)");
             string optType = Console.ReadLine();
-            Console.WriteLine("Enter opt reason:");
+            Logging.Log("Enter opt reason:");
             string optReason = Console.ReadLine();
-            Console.WriteLine("Enter Market Context:");
+            Logging.Log("Enter Market Context:");
             string marketContext = Console.ReadLine();
-            Console.WriteLine("Enter resource Id:");
+            Logging.Log("Enter resource Id:");
             string resourceID = Console.ReadLine();
-            Console.WriteLine("Enter end device asset:");
+            Logging.Log("Enter end device asset:");
             string endDevice = Console.ReadLine();
 
             int i = 0;
@@ -327,7 +330,7 @@ namespace novaAPIRev1
             {
                 try
                 {
-                    Console.WriteLine("Enter Start Time (Unix Epoch) for Availability #" + (i + 1).ToString() + " or stop if all availabilities have been entered");
+                    Logging.Log("Enter Start Time (Unix Epoch) for Availability #" + (i + 1).ToString() + " or stop if all availabilities have been entered");
                     string startTime = Console.ReadLine();
                     if (startTime.ToLower() == "stop")
                     {
@@ -337,7 +340,7 @@ namespace novaAPIRev1
 
                     int st = Int32.Parse(startTime);
 
-                    Console.WriteLine("Enter Number of Hours for Availability #" + (i + 1).ToString());
+                    Logging.Log("Enter Number of Hours for Availability #" + (i + 1).ToString());
                     string duration = Console.ReadLine();
                     int dur = Int32.Parse(duration);
                     OptSchedule.optAvailability avail = new OptSchedule.optAvailability(st, dur);
@@ -347,7 +350,7 @@ namespace novaAPIRev1
                 }catch(Exception ex)
                 {
                     availabilities.Clear();
-                    Console.WriteLine("Error in entry, retry");
+                    Logging.Log("Error in entry, retry");
                 }
             }
 
@@ -366,7 +369,7 @@ namespace novaAPIRev1
 
         static string CancelOptSchedule()
         {
-            Console.WriteLine("Enter optId:");
+            Logging.Log("Enter optId:");
             string optIdstr = Console.ReadLine();
 
           
@@ -383,18 +386,18 @@ namespace novaAPIRev1
 
         static string OptEvent()
         {
-            Console.WriteLine("Enter Opt ID:");
+            Logging.Log("Enter Opt ID:");
             string optID = Console.ReadLine();
-            Console.WriteLine("Enter Evend ID:");
+            Logging.Log("Enter Evend ID:");
             string eventID = Console.ReadLine();
-            Console.WriteLine("Enter Opt Type (In/Out)");
+            Logging.Log("Enter Opt Type (In/Out)");
             string inout = Console.ReadLine();
             string optType = "opt" + inout;
-            Console.WriteLine("Enter Opt Reason:");
+            Logging.Log("Enter Opt Reason:");
             string optReason = Console.ReadLine();
-            Console.WriteLine("Enter resourceId:");
+            Logging.Log("Enter resourceId:");
             string resourceId = Console.ReadLine();
-            Console.WriteLine("Enter requestId:");
+            Logging.Log("Enter requestId:");
             string requestId = Console.ReadLine();
 
             OptEvent optEvent = new OptEvent("ven.eventOpt",optID,eventID,optType,optReason,resourceId,requestId);
@@ -410,11 +413,11 @@ namespace novaAPIRev1
 
         static string CreatedEvent()
         {
-            Console.WriteLine("Enter event ID:");
+            Logging.Log("Enter event ID:");
             string eventID = Console.ReadLine();
-            Console.WriteLine("Enter Opt Type (optIn/optOut):");
+            Logging.Log("Enter Opt Type (optIn/optOut):");
             string optType = Console.ReadLine();
-            Console.WriteLine("Schedule Event (Y/N):");
+            Logging.Log("Schedule Event (Y/N):");
             string sched = Console.ReadLine();
             bool scheduleEvent = false;
             if(sched.ToLower() == "y")
@@ -463,32 +466,35 @@ namespace novaAPIRev1
         static void SetupConsole()
         {
        
-
+           
         }
 
-
+        static void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            Logging.Close();
+        }
         //Print out the Help menu for UI
         static void PrintMenu()
         {
             
-            Console.WriteLine("===Command List===");
-            Console.WriteLine("QR: Query Registration");
-            Console.WriteLine("VS: Ven Status");
-            Console.WriteLine("CPR: Create Party Registration");
-            Console.WriteLine("XPR: Cancel Party Registration");
-            Console.WriteLine("CR: Clear Registration");
-            Console.WriteLine("XR: Clear Reports");
-            Console.WriteLine("SV: Start Ven");
-            Console.WriteLine("XV: Stop Ven");
-            Console.WriteLine("RE: Request Event");
-            Console.WriteLine("XE: Clear Events");
-            Console.WriteLine("SVI: Set Ven ID");
-            Console.WriteLine("CS: Create Opt Schedule");
-            Console.WriteLine("XS: Cancel Opt Schedule");
-            Console.WriteLine("OE: Opt Event");
-            Console.WriteLine("CE: Created Event");
-            Console.WriteLine("RR: Registered Reports");
-            Console.WriteLine("RN: Registered Namespace");
+            Logging.Log("===Command List===",false,true);
+            Logging.Log("QR: Query Registration", false, true);
+            Logging.Log("VS: Ven Status", false, true);
+            Logging.Log("CPR: Create Party Registration", false, true);
+            Logging.Log("XPR: Cancel Party Registration", false, true);
+            Logging.Log("CR: Clear Registration", false, true);
+            Logging.Log("XR: Clear Reports", false, true);
+            Logging.Log("SV: Start Ven", false, true);
+            Logging.Log("XV: Stop Ven", false, true);
+            Logging.Log("RE: Request Event", false, true);
+            Logging.Log("XE: Clear Events", false, true);
+            Logging.Log("SVI: Set Ven ID", false, true);
+            Logging.Log("CS: Create Opt Schedule", false, true);
+            Logging.Log("XS: Cancel Opt Schedule", false, true);
+            Logging.Log("OE: Opt Event", false, true);
+            Logging.Log("CE: Created Event", false, true);
+            Logging.Log("RR: Registered Reports", false, true);
+            Logging.Log("RN: Registered Namespace", false, true);
         }
     }
 }
